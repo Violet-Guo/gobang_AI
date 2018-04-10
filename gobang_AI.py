@@ -1,3 +1,5 @@
+#coding:utf-8
+
 from graphics import *
 from math import *
 import numpy as np
@@ -38,12 +40,13 @@ shape_score = [(50, (0, 1, 1, 0, 0)),
 
 def ai():
     global cut_count   # 统计剪枝次数
-    cut_count = 0
     global search_count   # 统计搜索次数
+    cut_count = 0
     search_count = 0
     negamax(True, DEPTH, -99999999, 99999999)
     print("本次共剪枝次数：" + str(cut_count))
     print("本次共搜索次数：" + str(search_count))
+
     return next_point[0], next_point[1]
 
 
