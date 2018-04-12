@@ -13,11 +13,11 @@ list1 = []  # AI
 list2 = []  # human
 list3 = []  # all
 
-list_all = []  # 整个棋盘的点
+list_all = []        # 整个棋盘的点
 next_point = [0, 0]  # AI下一步最应该下的位置
 
-ratio = 1  # 进攻的系数   大于1 进攻型，  小于1 防守型
-DEPTH = 3  # 搜索深度   只能是单数。  如果是负数， 评估函数评估的的是自己多少步之后的自己得分的最大值，并不意味着是最好的棋， 评估函数的问题
+ratio = 1  # 进攻的系数：大于1 进攻型，小于1防守型
+DEPTH = 3  # 搜索深度：只能是单数！！如果是负数，评估函数评估的的是自己多少步之后的自己得分的最大值，并不意味着是最好的棋，评估函数的问题
 
 
 # 棋型的评估分数
@@ -39,13 +39,14 @@ shape_score = [(50, (0, 1, 1, 0, 0)),
 
 
 def ai():
-    global cut_count   # 统计剪枝次数
+    global cut_count      # 统计剪枝次数
     global search_count   # 统计搜索次数
     cut_count = 0
     search_count = 0
     negamax(True, DEPTH, -99999999, 99999999)
     print("本次共剪枝次数：" + str(cut_count))
     print("本次共搜索次数：" + str(search_count))
+    print("请黑子下~~~")
 
     return next_point[0], next_point[1]
 
@@ -56,8 +57,11 @@ def negamax(is_ai, depth, alpha, beta):
     if game_win(list1) or game_win(list2) or depth == 0:
         return evaluation(is_ai)
 
+    # set.difference获得差集，存在于第一个（list_all)，但是不存在于第二个集合（list3）
+    # 获得棋盘上还没有落子的点
     blank_list = list(set(list_all).difference(set(list3)))
-    # 搜索顺序排序  提高剪枝效率
+
+    # 搜索顺序排序，提高剪枝效率
     order(blank_list)
 
     # 遍历每一个候选步
@@ -101,17 +105,21 @@ def negamax(is_ai, depth, alpha, beta):
 #  离最后落子的邻居位置最有可能是最优点
 def order(blank_list):
     last_pt = list3[-1]
-    for item in blank_list:
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if i == 0 and j == 0:
-                    continue
-                if (last_pt[0] + i, last_pt[1] + j) in blank_list:
-                    blank_list.remove((last_pt[0] + i, last_pt[1] + j))
-                    blank_list.insert(0, (last_pt[0] + i, last_pt[1] + j))
+    # 相当于在最后落子位置的周围的八个方向进行了遍历
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            if i == 0 and j == 0:
+                continue
+            if (last_pt[0] + i, last_pt[1] + j) in blank_list:
+                # 把挨着最后一个落子点的位置挪到list的最前面
+                # 因为list是有序的，只能先remove再insert
+                # list.insert(index, obj0
+                blank_list.remove((last_pt[0] + i, last_pt[1] + j))
+                blank_list.insert(0, (last_pt[0] + i, last_pt[1] + j))
 
 
 def has_neightnor(pt):
+    # 在周围八个方向查找是否有子，如果有子就返回TRUE，没有返回false
     for i in range(-1, 2):
         for j in range(-1, 2):
             if i == 0 and j == 0:
@@ -133,8 +141,10 @@ def evaluation(is_ai):
         enemy_list = list1
 
     # 算自己的得分
-    score_all_arr = []  # 得分形状的位置 用于计算如果有相交 得分翻倍
+    # 得分形状的位置 用于计算如果有相交 得分翻倍
+    score_all_arr = []
     my_score = 0
+
     for pt in my_list:
         m = pt[0]
         n = pt[1]
@@ -161,7 +171,8 @@ def evaluation(is_ai):
 
 # 每个方向上的分值计算
 def cal_score(m, n, x_decrict, y_derice, enemy_list, my_list, score_all_arr):
-    add_score = 0  # 加分项
+    # 加分项
+    add_score = 0
     # 在一个方向上， 只取最大的得分项
     max_score_shape = (0, None)
 
@@ -247,64 +258,70 @@ def gobangwin():
 
 
 def main():
-    win = gobangwin()
+    window = gobangwin()
 
     for i in range(COLUMN+1):
         for j in range(ROW+1):
             list_all.append((i, j))
 
     # change代表对弈的次数，人是先手，AI是后手
+    # game_continue代表游戏是否继续，值为1，游戏继续；值为0，游戏结束
     change = 0
-    g = 0
+    game_continue = 1
     m = 0
     n = 0
 
-    while g == 0:
+    while game_continue == 1:
         # 若change是奇数，代表该AI下了
         if change % 2 == 1:
             pos = ai()
 
             if pos in list3:
                 message = Text(Point(200, 200), "不可用的位置" + str(pos[0]) + "," + str(pos[1]))
-                message.draw(win)
-                g = 1
+                message.draw(window)
+                game_continue = 0
 
             list1.append(pos)
             list3.append(pos)
 
+            # AI是白子，往棋盘上画白子
             piece = Circle(Point(GRID_WIDTH * pos[0], GRID_WIDTH * pos[1]), 16)
             piece.setFill('white')
-            piece.draw(win)
+            piece.draw(window)
 
+            # 判断AI是否赢了
             if game_win(list1):
                 message = Text(Point(100, 100), "white win.")
-                message.draw(win)
-                g = 1
+                message.draw(window)
+                game_continue = 0
             change = change + 1
-
+        # 若change是偶数，代表该human下了
         else:
-            p2 = win.getMouse()
+            p2 = window.getMouse()
             if not ((round((p2.getX()) / GRID_WIDTH), round((p2.getY()) / GRID_WIDTH)) in list3):
-
                 a2 = round((p2.getX()) / GRID_WIDTH)
                 b2 = round((p2.getY()) / GRID_WIDTH)
                 list2.append((a2, b2))
                 list3.append((a2, b2))
 
+                # human是黑子，往棋盘上画黑子
                 piece = Circle(Point(GRID_WIDTH * a2, GRID_WIDTH * b2), 16)
                 piece.setFill('black')
-                piece.draw(win)
+                piece.draw(window)
+
+                # 判断human是否赢了
                 if game_win(list2):
                     message = Text(Point(100, 100), "black win.")
-                    message.draw(win)
-                    g = 1
+                    message.draw(window)
+                    game_continue = 0
 
                 change = change + 1
 
     message = Text(Point(100, 120), "Click anywhere to quit.")
-    message.draw(win)
-    win.getMouse()
-    win.close()
+    message.draw(window)
+    window.getMouse()
+    window.close()
 
 
-main()
+if __name__ == "__main__":
+    main()
