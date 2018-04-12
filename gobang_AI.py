@@ -57,10 +57,11 @@ def negamax(is_ai, depth, alpha, beta):
         return evaluation(is_ai)
 
     blank_list = list(set(list_all).difference(set(list3)))
-    order(blank_list)   # 搜索顺序排序  提高剪枝效率
+    # 搜索顺序排序  提高剪枝效率
+    order(blank_list)
+
     # 遍历每一个候选步
     for next_step in blank_list:
-
         global search_count
         search_count += 1
 
@@ -82,9 +83,8 @@ def negamax(is_ai, depth, alpha, beta):
         list3.remove(next_step)
 
         if value > alpha:
-
-            print(str(value) + "alpha:" + str(alpha) + "beta:" + str(beta))
-            print(list3)
+            #print(str(value) + "alpha:" + str(alpha) + "beta:" + str(beta))
+            #print(list3)
             if depth == DEPTH:
                 next_point[0] = next_step[0]
                 next_point[1] = next_step[1]
@@ -212,19 +212,19 @@ def cal_score(m, n, x_decrict, y_derice, enemy_list, my_list, score_all_arr):
 def game_win(list):
     for m in range(COLUMN):
         for n in range(ROW):
-
-            if n < ROW - 4 and (m, n) in list and (m, n + 1) in list and (m, n + 2) in list and (
-                    m, n + 3) in list and (m, n + 4) in list:
-                return True
-            elif m < ROW - 4 and (m, n) in list and (m + 1, n) in list and (m + 2, n) in list and (
+            if (m, n) in list:
+                if n < ROW - 4 and (m, n + 1) in list and (m, n + 2) in list and (
+                        m, n + 3) in list and (m, n + 4) in list:
+                    return True
+                elif m < ROW - 4 and (m + 1, n) in list and (m + 2, n) in list and (
                         m + 3, n) in list and (m + 4, n) in list:
-                return True
-            elif m < ROW - 4 and n < ROW - 4 and (m, n) in list and (m + 1, n + 1) in list and (
+                    return True
+                elif m < ROW - 4 and n < ROW - 4 and (m + 1, n + 1) in list and (
                         m + 2, n + 2) in list and (m + 3, n + 3) in list and (m + 4, n + 4) in list:
-                return True
-            elif m < ROW - 4 and n > 3 and (m, n) in list and (m + 1, n - 1) in list and (
+                    return True
+                elif m < ROW - 4 and n > 3 and (m + 1, n - 1) in list and (
                         m + 2, n - 2) in list and (m + 3, n - 3) in list and (m + 4, n - 4) in list:
-                return True
+                    return True
     return False
 
 
@@ -253,13 +253,14 @@ def main():
         for j in range(ROW+1):
             list_all.append((i, j))
 
+    # change代表对弈的次数，人是先手，AI是后手
     change = 0
     g = 0
     m = 0
     n = 0
 
     while g == 0:
-
+        # 若change是奇数，代表该AI下了
         if change % 2 == 1:
             pos = ai()
 
