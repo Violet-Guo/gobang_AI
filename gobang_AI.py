@@ -2,7 +2,9 @@
 
 from graphics import *
 from math import *
+
 import numpy as np
+import datetime
 
 GRID_WIDTH = 40
 
@@ -51,7 +53,7 @@ def ai():
     return next_point[0], next_point[1]
 
 
-# 负值极大算法搜索 alpha + beta剪枝
+# 负值极大算法搜索 alpha + beta 剪枝，alpha代表极大值，beta代表极小值
 def negamax(is_ai, depth, alpha, beta):
     # 游戏是否结束 | | 探索的递归深度是否到边界
     if game_win(list1) or game_win(list2) or depth == 0:
@@ -61,7 +63,7 @@ def negamax(is_ai, depth, alpha, beta):
     # 获得棋盘上还没有落子的点
     blank_list = list(set(list_all).difference(set(list3)))
 
-    # 搜索顺序排序，提高剪枝效率
+    # 搜索顺序排序，将最后落子的附近的点移到了前面，提高剪枝效率
     order(blank_list)
 
     # 遍历每一个候选步
@@ -69,7 +71,7 @@ def negamax(is_ai, depth, alpha, beta):
         global search_count
         search_count += 1
 
-        # 如果要评估的位置没有相邻的子， 则不去评估  减少计算
+        # 如果要评估的位置没有相邻的子（说明是孤立的一步），则不去评估，减少计算
         if not has_neightnor(next_step):
             continue
 
@@ -79,7 +81,9 @@ def negamax(is_ai, depth, alpha, beta):
             list2.append(next_step)
         list3.append(next_step)
 
+        # 估算下一步human落子位置的分数，对于对手来说，极大极小值是相反的
         value = -negamax(not is_ai, depth - 1, -beta, -alpha)
+
         if is_ai:
             list1.remove(next_step)
         else:
@@ -274,6 +278,7 @@ def main():
     while game_continue == 1:
         # 若change是奇数，代表该AI下了
         if change % 2 == 1:
+            time1 = datetime.datetime.now()
             pos = ai()
 
             if pos in list3:
@@ -289,14 +294,20 @@ def main():
             piece.setFill('white')
             piece.draw(window)
 
+            # 计算AI落子的时间
+            time2 = datetime.datetime.now()
+            interval = time2 - time1
+            sec = interval.days * 24 * 3600 + interval.seconds
+            print("AI use time : %d" % (sec))
+
             # 判断AI是否赢了
             if game_win(list1):
                 message = Text(Point(100, 100), "white win.")
                 message.draw(window)
                 game_continue = 0
             change = change + 1
-        # 若change是偶数，代表该human下了
         else:
+            # 若change是偶数，代表该human下了
             p2 = window.getMouse()
             if not ((round((p2.getX()) / GRID_WIDTH), round((p2.getY()) / GRID_WIDTH)) in list3):
                 a2 = round((p2.getX()) / GRID_WIDTH)
