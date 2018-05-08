@@ -190,7 +190,7 @@ def evaluation(is_ai):
         enemy_score += cal_score(m, n, -1, 0, my_list, enemy_list, score_all_arr_enemy)
         enemy_score += cal_score(m, n, 0, -1, my_list, enemy_list, score_all_arr_enemy)
 
-    total_score = my_score - enemy_score*ratio*0.1
+    total_score = my_score - enemy_score * ratio * 0.1
 
     return total_score
 
@@ -268,7 +268,7 @@ def game_win(list):
 
 
 def gobangwindow():
-    win = GraphWin("this is a gobang game", GRID_WIDTH * COLUMN, GRID_WIDTH * ROW)
+    win = GraphWin("Gobang Game change by Violet Guo", GRID_WIDTH * COLUMN, GRID_WIDTH * ROW)
     win.setBackground("yellow")
     i1 = 0
 
