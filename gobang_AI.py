@@ -125,12 +125,12 @@ def order(blank_list):
             for j in range(-1, 2):
                 if i == 0 and j == 0:
                     continue
-                if (last_pt[cnt] + i, last_pt[cnt] + j) in blank_list:
+                if (last_pt[cnt][0] + i, last_pt[cnt][1] + j) in blank_list:
                     # 把挨着最后一个落子点的位置挪到list的最前面
                     # 因为list是有序的，只能先remove再insert
                     # list.insert(index, obj0
-                    blank_list.remove((last_pt[cnt] + i, last_pt[cnt] + j))
-                    blank_list.insert(0, (last_pt[cnt] + i, last_pt[cnt] + j))
+                    blank_list.remove((last_pt[cnt][0] + i, last_pt[cnt][1] + j))
+                    blank_list.insert(0, (last_pt[cnt][0] + i, last_pt[cnt][1] + j))
 
 
 def has_neightnor(pt):
