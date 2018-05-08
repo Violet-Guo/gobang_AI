@@ -112,9 +112,15 @@ def negamax(is_ai, depth, alpha, beta):
 #  最后落下的两个子的邻居最有可能是最优点
 def order(blank_list):
     # 获得最后一个和倒数第二个落下的棋子
-    last_pt = [list3[-2], list3[-1]]
+    list_len = len(list3)
+    if list_len >= 2:
+        last_pt = [list3[-2], list3[-1]]
+    else:
+        last_pt = [list3[-1]]
     # 相当于在最后落子位置的周围的八个方向进行了遍历
     for cnt in range(0, 2):
+        if list_len < 2 and cnt == 1:
+            break
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if i == 0 and j == 0:
