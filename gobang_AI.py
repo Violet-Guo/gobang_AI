@@ -109,21 +109,22 @@ def negamax(is_ai, depth, alpha, beta):
     return alpha
 
 
-#  离最后落子的邻居位置最有可能是最优点
+#  最后落下的两个子的邻居最有可能是最优点
 def order(blank_list):
-    # 获得最后一个落下的棋子
-    last_pt = list3[-1]
+    # 获得最后一个和倒数第二个落下的棋子
+    last_pt = [list3[-2], list3[-1]]
     # 相当于在最后落子位置的周围的八个方向进行了遍历
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            if i == 0 and j == 0:
-                continue
-            if (last_pt[0] + i, last_pt[1] + j) in blank_list:
-                # 把挨着最后一个落子点的位置挪到list的最前面
-                # 因为list是有序的，只能先remove再insert
-                # list.insert(index, obj0
-                blank_list.remove((last_pt[0] + i, last_pt[1] + j))
-                blank_list.insert(0, (last_pt[0] + i, last_pt[1] + j))
+    for cnt in range(0, 2):
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue
+                if (last_pt[cnt] + i, last_pt[cnt] + j) in blank_list:
+                    # 把挨着最后一个落子点的位置挪到list的最前面
+                    # 因为list是有序的，只能先remove再insert
+                    # list.insert(index, obj0
+                    blank_list.remove((last_pt[cnt] + i, last_pt[cnt] + j))
+                    blank_list.insert(0, (last_pt[cnt] + i, last_pt[cnt] + j))
 
 
 def has_neightnor(pt):
