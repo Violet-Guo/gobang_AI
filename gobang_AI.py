@@ -252,25 +252,33 @@ def cal_score(m, n, x_direct, y_direct, enemy_list, my_list, score_all_arr):
 
     return add_score + max_score_shape[0]
 
-# 传入的是AI或者human的棋盘，在各个方向上判断是否赢
+# 传入的是AI或者human的棋盘，在最后落子点的各个方向上判断是否赢
 def game_win(list):
-    for m in range(COLUMN):
-        for n in range(ROW):
-            if (m, n) in list:
-                # 在四个不同的方向上判断是否有5个子连在一起
-                # 既然有1个子已经在list中了，就判断是否有4个子连在一起
-                if n < ROW - 4 and (m, n + 1) in list and (m, n + 2) in list and (
-                        m, n + 3) in list and (m, n + 4) in list:
-                    return True
-                elif m < ROW - 4 and (m + 1, n) in list and (m + 2, n) in list and (
-                        m + 3, n) in list and (m + 4, n) in list:
-                    return True
-                elif m < ROW - 4 and n < ROW - 4 and (m + 1, n + 1) in list and (
-                        m + 2, n + 2) in list and (m + 3, n + 3) in list and (m + 4, n + 4) in list:
-                    return True
-                elif m < ROW - 4 and n > 3 and (m + 1, n - 1) in list and (
-                        m + 2, n - 2) in list and (m + 3, n - 3) in list and (m + 4, n - 4) in list:
-                    return True
+    if len(list) <= 4:
+        return False
+
+    last_pt = list[-1]
+    dir = [(0, 1), (1, 0), (1, 1), (1, -1)]
+    for k in range(0, 4):
+        pt1, pt2 = last_pt[0], last_pt[1]
+        cnt = 1
+        for i in range(0, 4):
+            if (pt1 + dir[k][0], pt2 + dir[k][1]) in list:
+                pt1 += dir[k][0]
+                pt2 += dir[k][1]
+                cnt += 1
+            else:
+                break
+        pt1, pt2 = last_pt[0], last_pt[1]
+        for i in range(0, 4):
+            if (pt1 - dir[k][0], pt2 - dir[k][1]) in list:
+                pt1 -= dir[k][0]
+                pt2 -= dir[k][1]
+                cnt += 1
+            else:
+                break
+        if cnt == 5:
+            return True
     return False
 
 
