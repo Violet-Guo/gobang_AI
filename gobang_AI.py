@@ -174,11 +174,6 @@ def evaluation(is_ai):
         my_score += cal_score(m, n, 1, 1, enemy_list, my_list, score_all_arr)
         my_score += cal_score(m, n, -1, 1, enemy_list, my_list, score_all_arr)
 
-        my_score += cal_score(m, n, -1, -1, enemy_list, my_list, score_all_arr)
-        my_score += cal_score(m, n, 1, -1, enemy_list, my_list, score_all_arr)
-        my_score += cal_score(m, n, -1, 0, enemy_list, my_list, score_all_arr)
-        my_score += cal_score(m, n, 0, -1, enemy_list, my_list, score_all_arr)
-
     #  算敌人的得分， 并减去
     score_all_arr_enemy = []
     enemy_score = 0
@@ -191,11 +186,6 @@ def evaluation(is_ai):
         enemy_score += cal_score(m, n, 1, 0, my_list, enemy_list, score_all_arr_enemy)
         enemy_score += cal_score(m, n, 1, 1, my_list, enemy_list, score_all_arr_enemy)
         enemy_score += cal_score(m, n, -1, 1, my_list, enemy_list, score_all_arr_enemy)
-
-        enemy_score += cal_score(m, n, -1, -1, my_list, enemy_list, score_all_arr_enemy)
-        enemy_score += cal_score(m, n, 1, -1, my_list, enemy_list, score_all_arr_enemy)
-        enemy_score += cal_score(m, n, -1, 0, my_list, enemy_list, score_all_arr_enemy)
-        enemy_score += cal_score(m, n, 0, -1, my_list, enemy_list, score_all_arr_enemy)
 
     total_score = my_score - enemy_score * ratio * 0.1
 
