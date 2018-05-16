@@ -21,6 +21,10 @@ next_point = [0, 0]  # AI下一步最应该下的位置
 ratio = 1  # 进攻的系数：大于1 进攻型，小于1防守型
 DEPTH = 3  # 搜索深度：只能是单数！！如果是双数，评估函数评估的的是自己多少步之后的自己得分的最大值，并不意味着是最好的棋，评估函数的问题
 
+border_x1 = 0 # the left x
+border_x2 = 0 # the right x
+border_y1 = 0 # the top y
+border_y2 = 0 # the bottle y
 
 # 棋型的评估分数
 shape_score = [(50, (0, 1, 1, 0, 0)),
@@ -73,7 +77,7 @@ def negamax(is_ai, depth, alpha, beta):
         search_count += 1
 
         # 如果要评估的位置没有相邻的子（说明是孤立的一步），则不去评估，减少计算
-        if not has_neightnor(next_step):
+        if not check_border(next_step):
             continue
 
         # 先将这一步加入到list当中，以便于计算下一步的收益
@@ -132,17 +136,10 @@ def order(blank_list):
                     blank_list.remove((last_pt[cnt][0] + i, last_pt[cnt][1] + j))
                     blank_list.insert(0, (last_pt[cnt][0] + i, last_pt[cnt][1] + j))
 
-
-def has_neightnor(pt):
-    # 在周围八个方向查找是否有子，如果有子就返回TRUE，没有返回false
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            if i == 0 and j == 0:
-                continue
-            if (pt[0] + i, pt[1]+j) in list3:
-                return True
+def check_border(pt):
+    if border_x1 <= pt[0] <= border_x2 and border_y1 <= pt[1] <= border_y2:
+        return True
     return False
-
 
 # 评估函数
 def evaluation(is_ai):
@@ -169,6 +166,7 @@ def evaluation(is_ai):
         m = pt[0]
         # the shape
         n = pt[1]
+        # 四个不同的方向，竖着，横着，左上到右下，右上到左下
         my_score += cal_score(m, n, 0, 1, enemy_list, my_list, score_all_arr)
         my_score += cal_score(m, n, 1, 0, enemy_list, my_list, score_all_arr)
         my_score += cal_score(m, n, 1, 1, enemy_list, my_list, score_all_arr)
@@ -194,7 +192,7 @@ def evaluation(is_ai):
 
 # 每个方向上的分值计算
 def cal_score(m, n, x_direct, y_direct, enemy_list, my_list, score_all_arr):
-    # 加分项
+    # 加分项，如果有两个形状相交，增加得分
     add_score = 0
     # 在一个方向上， 只取最大的得分项
     max_score_shape = (0, None)
@@ -289,6 +287,50 @@ def gobangwindow():
         i2 = i2 + GRID_WIDTH
     return win
 
+def init_border(pos):
+    global border_x1
+    global border_x2
+    global border_y1
+    global border_y2
+
+    if pos[0] - 3 >= 0:
+        border_x1 = pos[0] - 3
+    if pos[0] + 3 <= COLUMN:
+        border_x2 = pos[0] + 3
+    if pos[1] - 3 >= 0:
+        border_y1 = pos[1] - 3
+    if pos[1] + 3 <= ROW:
+        border_y2 = pos[1] + 3
+
+
+def update_border(pos):
+    global border_x1
+    global border_x2
+    global border_y1
+    global border_y2
+
+    if border_x1 != 0 and pos[0] <= border_x1:
+        if pos[0] - 3 >= 0:
+            border_x1 = pos[0] - 3
+        else:
+            border_x1 = 0
+    if border_x2 != COLUMN and pos[0] >= border_x2:
+        if pos[0] + 3 <= COLUMN:
+            border_x2 = pos[0] + 3
+        else:
+            border_x2 = COLUMN
+
+    if border_y1 != 0 and pos[1] <= border_y1:
+        if pos[1] - 3 >= 0:
+            border_y1 = pos[1] - 3
+        else:
+            border_y1 = 0
+    if border_y2 != ROW and pos[1] >= border_y2:
+        if pos[1] + 3 <= ROW:
+            border_y2 = pos[1] + 3
+        else:
+            border_y2 = ROW
+
 
 def main():
     # 获得五子棋游戏的窗口
@@ -320,6 +362,10 @@ def main():
             list1.append(pos)
             list3.append(pos)
 
+            update_border(pos)
+            print("the new order is x1 = " + str(border_x1) + " x2 = " + str(border_x2) +
+                  " y1 = " + str(border_y1) + " y2 = " + str(border_y2) + "\n")
+
             # AI是白子，往棋盘上画白子
             piece = Circle(Point(GRID_WIDTH * pos[0], GRID_WIDTH * pos[1]), 16)
             piece.setFill('white')
@@ -345,6 +391,14 @@ def main():
                 b2 = round((p2.getY()) / GRID_WIDTH)
                 list2.append((a2, b2))
                 list3.append((a2, b2))
+
+                if change == 0:
+                    print("in the border init\n")
+                    init_border((a2, b2))
+                else:
+                    update_border((a2, b2))
+                    print("the new order is x1 = " + str(border_x1) + " x2 = " + str(border_x2) +
+                          " y1 = " + str(border_y1) + " y2 = " + str(border_y2) + "\n")
 
                 # human是黑子，往棋盘上画黑子
                 piece = Circle(Point(GRID_WIDTH * a2, GRID_WIDTH * b2), 16)
