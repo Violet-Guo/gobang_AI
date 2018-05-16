@@ -77,7 +77,7 @@ def negamax(is_ai, depth, alpha, beta):
         search_count += 1
 
         # 如果要评估的位置没有相邻的子（说明是孤立的一步），则不去评估，减少计算
-        if not check_border(next_step):
+        if not has_neightnor(next_step):
             continue
 
         # 先将这一步加入到list当中，以便于计算下一步的收益
@@ -135,6 +135,16 @@ def order(blank_list):
                     # list.insert(index, obj0
                     blank_list.remove((last_pt[cnt][0] + i, last_pt[cnt][1] + j))
                     blank_list.insert(0, (last_pt[cnt][0] + i, last_pt[cnt][1] + j))
+
+def has_neightnor(pt):
+    # 在周围八个方向查找是否有子，如果有子就返回TRUE，没有返回false
+    for i in range(-2, 3):
+        for j in range(-2, 3):
+            if i == 0 and j == 0:
+                continue
+            if (pt[0] + i, pt[1]+j) in list3:
+                return True
+    return False
 
 def check_border(pt):
     if border_x1 <= pt[0] <= border_x2 and border_y1 <= pt[1] <= border_y2:
@@ -362,9 +372,11 @@ def main():
             list1.append(pos)
             list3.append(pos)
 
+            '''
             update_border(pos)
             print("the new order is x1 = " + str(border_x1) + " x2 = " + str(border_x2) +
                   " y1 = " + str(border_y1) + " y2 = " + str(border_y2) + "\n")
+            '''
 
             # AI是白子，往棋盘上画白子
             piece = Circle(Point(GRID_WIDTH * pos[0], GRID_WIDTH * pos[1]), 16)
@@ -392,6 +404,7 @@ def main():
                 list2.append((a2, b2))
                 list3.append((a2, b2))
 
+                '''
                 if change == 0:
                     print("in the border init\n")
                     init_border((a2, b2))
@@ -399,6 +412,7 @@ def main():
                     update_border((a2, b2))
                     print("the new order is x1 = " + str(border_x1) + " x2 = " + str(border_x2) +
                           " y1 = " + str(border_y1) + " y2 = " + str(border_y2) + "\n")
+                '''
 
                 # human是黑子，往棋盘上画黑子
                 piece = Circle(Point(GRID_WIDTH * a2, GRID_WIDTH * b2), 16)
